@@ -1,0 +1,101 @@
+id,data_venda,ano_venda,mes_venda,qualidade_data,modelo,familia,ano_modelo,preco_usd,milhas,pagamento,cidade,estado,status,status_grupo
+6,,2024,2,parcial,718 Cayman,718,2022,79500.0,9800,Cartão de crédito,Boston,MA,Entregue,Entregue
+7,2024-03-14,2024,3,original,911 Turbo S,911,2024,235000.0,1200,Transf. internacional,Seattle,WA,Entregue,Entregue
+8,2024-04-18,2024,4,original,Cayenne Coupe,Cayenne,2023,112750.0,6400,Financiamento,Austin,TX,Em trânsito,Em andamento
+9,,2024,4,parcial,Macan S,Macan,2021,68900.0,28,Dinheiro,Denver,CO,Pendente,Em andamento
+10,2024-05-22,2024,5,original,Taycan 4S,Taycan,2024,121000.0,0,Transferência bancária,Los Angeles,CA,Entregue,Entregue
+11,2024-08-06,2024,8,original,Panamera 4,Panamera,2023,104500.0,14500,Cartão de crédito,Miami,FL,Cancelada,Cancelada
+12,2024-07-11,2024,7,original,911 Carrera S,911,2020,96300.0,41000,Leasing,New York,NY,Entregue,Entregue
+13,2024-07-15,2024,7,recuperada,Cayenne E-Hybrid,Cayenne,2022,89750.0,11744,Transf. internacional,San Diego,CA,Aguardando aprovação,Em andamento
+14,2024-08-19,2024,8,original,718 Boxster,718,2021,73500.0,22300,Cartão de débito,Chicago,IL,Despachada,Em andamento
+15,2024-09-02,2024,9,original,Macan GTS,Macan,2024,95000.0,3500,Financiamento,Phoenix,AZ,Em trânsito,Em andamento
+16,2024-09-17,2024,9,original,Taycan Turbo,Taycan,2023,153200.5,11,ACH,Dallas,TX,Entregue,Entregue
+17,,2024,10,parcial,911 GT3,911,2024,241000.0,750,Transf. internacional,Las Vegas,NV,Pendente,Em andamento
+18,2024-05-11,2024,5,original,Panamera Turbo S,Panamera,2022,132000.0,19250,Dinheiro,San Jose,CA,Entregue,Entregue
+19,2024-12-12,2024,12,original,Cayenne Turbo GT,Cayenne,2024,188000.0,2100,Cripto,Houston,TX,Aguardando entrega,Em andamento
+20,2024-12-25,2024,12,original,911 Carrera Cabriolet,911,2023,127800.0,12000,Cartão de crédito,Atlanta,GA,Entregue,Entregue
+21,2025-01-06,2025,1,original,Macan,Macan,2021,58900.0,33700,Transferência bancária,Orlando,FL,Pendente,Em andamento
+22,,2025,1,parcial,718 Spyder RS,718,2024,164000.0,900,Financiamento,Portland,OR,Em trânsito,Em andamento
+23,2025-02-14,2025,2,original,Taycan Cross Turismo,Taycan,2023,118500.0,7800,Transf. internacional,Charlotte,NC,Entregue,Entregue
+24,,2025,2,parcial,Cayenne S,Cayenne,2022,91300.0,16000,Cartão de crédito,Nashville,TN,Pendente,Em andamento
+25,2025-03-21,2025,3,original,911 Targa 4S,911,2024,158750.0,2500,Leasing,Minneapolis,MN,Entregue,Entregue
+26,2025-03-28,2025,3,original,Panamera,Panamera,2020,72000.0,49000,Transferência bancária,Philadelphia,PA,Cancelada,Cancelada
+27,2025-04-09,2025,4,original,Macan Electric,Macan,2025,86500.0,0,Transf. internacional,San Antonio,TX,Entregue,Entregue
+28,,2025,4,parcial,911 Dakar,911,2024,270000.0,1050,Dinheiro,Salt Lake City,UT,Aguardando retirada,Em andamento
+29,2025-05-12,2025,5,original,Taycan GTS,Taycan,2023,139000.0,6250,Financiamento,Raleigh,NC,Em trânsito,Em andamento
+30,2025-06-18,2025,6,original,Cayenne,Cayenne,2021,76800.0,38400,Cartão de crédito,Detroit,MI,Entregue,Entregue
+31,,2025,6,parcial,718 Cayman GT4 RS,718,2024,173600.0,400,Transf. internacional,Columbus,OH,Pendente,Em andamento
+32,2025-07-07,2025,7,original,911 Carrera GTS,911,2022,119900.0,13600,Dinheiro,Indianapolis,IN,Entregue,Entregue
+33,2025-07-22,2025,7,original,Panamera 4 E-Hybrid,Panamera,2023,109250.0,8900,Leasing,Fort Worth,TX,Em trânsito,Em andamento
+34,2025-08-14,2025,8,original,Macan T,Macan,2022,82000.0,21750,Transf. internacional,Jacksonville,FL,Entregue,Entregue
+35,2025-09-01,2025,9,original,Taycan Turbo S,Taycan,2025,214000.0,0,Cripto,San Diego,CA,Em análise,Em andamento
+36,,2025,9,parcial,911 Carrera,911,2024,124500.0,4800,Cartão de crédito,Tampa,FL,Entregue,Entregue
+37,2025-09-18,2025,9,original,Cayenne S,Cayenne,2023,98200.0,12200,Transferência bancária,Sacramento,CA,Pendente,Em andamento
+38,2025-10-04,2025,10,original,Macan,Macan,2022,67500.0,24100,Financiamento,Cleveland,OH,Entregue,Entregue
+39,2025-10-12,2025,10,original,Taycan,Taycan,2025,116900.0,0,Transf. internacional,Milwaukee,WI,Em trânsito,Em andamento
+40,2025-10-29,2025,10,original,Panamera 4S,Panamera,2024,112000.0,10,Dinheiro,Kansas City,MO,Entregue,Entregue
+41,2025-02-11,2025,2,original,718 Boxster,718,2021,74000.0,31000,Cartão de débito,Omaha,NE,Cancelada,Cancelada
+42,2025-11-16,2025,11,original,911 Turbo,911,2024,198300.0,2400,Transf. internacional,Albuquerque,NM,Aguardando entrega,Em andamento
+43,2025-11-18,2025,11,recuperada,Cayenne Coupe,Cayenne,2023,103750.0,6773,Transf. internacional,Tucson,AZ,Aguardando aprovação,Em andamento
+44,,2025,11,parcial,Macan GTS,Macan,2024,93600.0,5800,Financiamento,Fresno,CA,Despachada,Em andamento
+45,2025-12-07,2025,12,original,Taycan 4S,Taycan,2025,129000.0,0,ACH,Virginia Beach,VA,Em trânsito,Em andamento
+46,2025-12-22,2025,12,original,Panamera Turbo,Panamera,2022,136000.0,18400,Cartão de crédito,Colorado Springs,CO,Entregue,Entregue
+47,,2025,12,parcial,911 GT3 RS,911,2024,286500.0,700,Transf. internacional,Arlington,TX,Pendente,Em andamento
+48,2026-01-08,2026,1,original,Cayenne E-Hybrid,Cayenne,2023,92800.0,15000,Leasing,Bakersfield,CA,Entregue,Entregue
+49,2026-01-15,2026,1,original,Macan T,Macan,2022,72400.0,19750,Dinheiro,Mesa,AZ,Aguardando retirada,Em andamento
+50,2026-01-28,2026,1,original,Taycan Turbo,Taycan,2025,158500.0,3200,Cripto,Atlanta,GA,Entregue,Entregue
+51,2026-02-03,2026,2,original,718 Cayman,718,2021,69900.0,27600,Transferência bancária,Long Beach,CA,Pendente,Em andamento
+52,,2026,2,parcial,911 Targa 4,911,2024,141250.0,2100,Financiamento,Oakland,CA,Em trânsito,Em andamento
+53,2026-02-19,2026,2,original,Panamera,Panamera,2020,71500.0,52000,Transf. internacional,Tulsa,OK,Entregue,Entregue
+54,2026-02-25,2026,2,original,Cayenne Turbo,Cayenne,2023,146800.0,11300,Cartão de crédito,Wichita,KS,Pendente,Em andamento
+55,2026-03-01,2026,3,original,Macan Electric,Macan,2025,89700.0,0,Leasing,New Orleans,LA,Entregue,Entregue
+56,2026-03-14,2026,3,original,911 Carrera S,911,2022,104600.0,15900,Transferência bancária,Honolulu,HI,Cancelada,Cancelada
+57,,2026,3,parcial,Taycan GTS,Taycan,2024,142000.0,6600,Transf. internacional,Anaheim,CA,Entregue,Entregue
+58,2026-04-08,2026,4,original,Cayenne,Cayenne,2021,78400.0,40250,Dinheiro,Henderson,NV,Em análise,Em andamento
+59,,2026,4,parcial,718 Spyder RS,718,2025,169000.0,850,Financiamento,Lexington,KY,Em trânsito,Em andamento
+60,2026-04-21,2026,4,original,911 Dakar,911,2024,268900.0,1400,Cartão de crédito,Riverside,CA,Entregue,Entregue
+61,2026-04-29,2026,4,original,Panamera 4,Panamera,2023,101300.0,12700,Transf. internacional,Corpus Christi,TX,Pendente,Em andamento
+62,2026-05-05,2026,5,original,Macan S,Macan,2021,66750.0,29800,Dinheiro,St. Louis,MO,Entregue,Entregue
+63,2026-05-14,2026,5,original,Taycan Cross Turismo,Taycan,2024,127900.0,7500,Leasing,Pittsburgh,PA,Em trânsito,Em andamento
+64,2026-05-23,2026,5,original,Cayenne Turbo GT,Cayenne,2025,200000.0,1950,Transf. internacional,Cincinnati,OH,Entregue,Entregue
+65,2026-06-02,2026,6,original,911 Carrera Cabriolet,911,2023,132000.0,8800,Cripto,Anchorage,AK,Em análise,Em andamento
+66,2026-06-15,2026,6,original,718 Cayman GT4 RS,718,2024,176400.0,600,Cartão de crédito,Plano,TX,Entregue,Entregue
+67,,2026,6,parcial,Panamera 4 E-Hybrid,Panamera,2022,108500.0,16200,Transferência bancária,Newark,NJ,Cancelada,Cancelada
+68,2026-07-07,2026,7,original,Macan,Macan,2021,59000.0,36000,Financiamento,Greensboro,NC,Aguardando entrega,Em andamento
+69,2026-07-20,2026,7,original,Taycan Turbo S,Taycan,2025,218000.0,0,Transf. internacional,Lincoln,NE,Pendente,Em andamento
+70,,2026,7,parcial,Cayenne S,Cayenne,2024,99950.0,5300,Cartão de débito,Jersey City,NJ,Entregue,Entregue
+71,2026-04-08,2026,4,original,911 Carrera GTS,911,2024,121750.0,5872,Cartão de crédito,Chandler,AZ,Entregue,Entregue
+72,2026-08-18,2026,8,original,718 Boxster GTS,718,2023,91500.0,13300,Leasing,Reno,NV,Despachada,Em andamento
+73,2026-08-31,2026,8,original,Panamera Turbo S,Panamera,2022,134000.0,20100,Transf. internacional,Buffalo,NY,Em trânsito,Em andamento
+74,2026-09-09,2026,9,original,Macan GTS,Macan,2024,96800.0,0,ACH,Durham,NC,Entregue,Entregue
+75,2026-09-17,2026,9,original,Taycan 4S,Taycan,2025,131600.0,2900,Transf. internacional,Laredo,TX,Aguardando aprovação,Em andamento
+76,2026-09-28,2026,9,original,Cayenne E-Hybrid,Cayenne,2023,94300.0,13100,Dinheiro,Madison,WI,Entregue,Entregue
+77,2026-10-06,2026,10,original,911 Turbo S,911,2025,242000.0,1100,Cripto,Lubbock,TX,Aguardando retirada,Em andamento
+78,2026-10-16,2026,10,original,718 Cayman S,718,2022,82750.0,22500,Cartão de crédito,Toledo,OH,Cancelada,Cancelada
+79,2026-10-29,2026,10,original,Macan Electric,Macan,2026,91300.0,0,Transf. internacional,Irvine,CA,Entregue,Entregue
+80,2026-11-03,2026,11,original,Panamera,Panamera,2021,79900.0,44800,Financiamento,Garland,TX,Pendente,Em andamento
+81,,2026,11,parcial,Cayenne Coupe,Cayenne,2024,111000.0,6700,Transferência bancária,Irving,TX,Em trânsito,Em andamento
+82,2026-12-11,2026,12,original,911 Targa 4S,911,2023,156500.0,4200,Dinheiro,Chesapeake,VA,Entregue,Entregue
+83,2026-12-24,2026,12,original,Taycan,Taycan,2025,119900.0,1250,Leasing,Scottsdale,AZ,Pendente,Em andamento
+84,,2026,12,parcial,Macan T,Macan,2022,73200.0,18600,Transf. internacional,Norfolk,VA,Entregue,Entregue
+85,2026-12-28,2026,12,original,911 GT3,911,2024,224000.0,3000,Transf. internacional,Boise,ID,Aguardando entrega,Em andamento
+86,2027-01-15,2027,1,original,911 Carrera,911,2024,126900.0,7200,Cartão de crédito,Orlando,FL,Entregue,Entregue
+87,2027-01-29,2027,1,original,Cayenne,Cayenne,2023,84500.0,21400,Transferência bancária,San Jose,CA,Pendente,Em andamento
+88,2027-02-11,2027,2,original,Macan S,Macan,2022,69800.0,26300,Financiamento,Tampa,FL,Entregue,Entregue
+89,,2027,2,parcial,Taycan 4S,Taycan,2025,132700.0,0,Transf. internacional,Denver,CO,Em trânsito,Em andamento
+90,2027-03-05,2027,3,original,Panamera,Panamera,2021,81000.0,42,Dinheiro,Austin,TX,Entregue,Entregue
+91,2027-03-18,2027,3,original,718 Cayman,718,2023,78900.0,17500,Cartão de débito,Seattle,WA,Cancelada,Cancelada
+92,2027-04-02,2027,4,original,911 Turbo S,911,2026,249300.0,900,Transf. internacional,Boston,MA,Aguardando entrega,Em andamento
+93,2027-04-15,2027,4,recuperada,Cayenne Coupe,Cayenne,2024,108750.0,5530,Transf. internacional,Phoenix,AZ,Aguardando aprovação,Em andamento
+94,,2027,4,parcial,Macan Electric,Macan,2026,92600.0,0,Financiamento,Chicago,IL,Despachada,Em andamento
+95,2027-05-12,2027,5,original,Taycan Turbo,Taycan,2025,164000.0,0,ACH,Dallas,TX,Em trânsito,Em andamento
+96,2027-05-27,2027,5,original,Panamera 4S,Panamera,2024,119000.0,13400,Cartão de crédito,San Francisco,CA,Entregue,Entregue
+97,,2027,6,parcial,911 GT3,911,2026,232500.0,1700,Transf. internacional,Las Vegas,NV,Pendente,Em andamento
+98,2027-06-18,2027,6,original,Cayenne E-Hybrid,Cayenne,2023,96800.0,14000,Leasing,Charlotte,NC,Entregue,Entregue
+99,2027-07-03,2027,7,original,Macan T,Macan,2022,74400.0,20750,Dinheiro,Mesa,AZ,Aguardando retirada,Em andamento
+100,2027-07-22,2027,7,original,Taycan GTS,Taycan,2025,148500.0,5200,Cripto,Atlanta,GA,Entregue,Entregue
+101,2027-08-08,2027,8,original,718 Boxster,718,2021,71900.0,29600,Transferência bancária,Long Beach,CA,Pendente,Em andamento
+102,,2027,8,parcial,911 Targa 4,911,2024,143250.0,3100,Financiamento,Oakland,CA,Em trânsito,Em andamento
+103,2027-09-19,2027,9,original,Panamera Turbo,Panamera,2020,137500.0,48000,Transf. internacional,Tulsa,OK,Entregue,Entregue
+104,2027-09-25,2027,9,original,Cayenne Turbo GT,Cayenne,2025,204800.0,3300,Cartão de crédito,Wichita,KS,Pendente,Em andamento
+105,2027-10-01,2027,10,original,911 Dakar,911,2024,271700.0,1050,Leasing,New Orleans,LA,Entregue,Entregue

@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vendas Porsche · Dashboard</title>
+<meta name="description" content="Dashboard interativa de 100 vendas da Porsche nos EUA: receita por família de modelo, mercados por estado e métodos de pagamento.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f4f3ef;
+    --card: #ffffff;
+    --line: #e3e1db;
+    --track: #efede8;
+    --ink: #121212;
+    --ink-2: #55534e;
+    --ink-3: #8a8780;
+    --bar: #26262a;
+    --bar-dim: #c9c7c1;
+    --accent: #c8102e;
+    --accent-soft: #fbe9ec;
+    --good: #0b8f0b;
+    --warn: #e2a000;
+    --crit: #d03b3b;
+    --shadow: 0 1px 0 rgba(0,0,0,.04), 0 8px 24px -16px rgba(0,0,0,.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0f0f10;
+      --card: #18181a;
+      --line: #2a2a2d;
+      --track: #222225;
+      --ink: #f3f2ee;
+      --ink-2: #b9b7b0;
+      --ink-3: #85837d;
+      --bar: #e9e7e1;
+      --bar-dim: #47464a;
+      --accent: #ff3b4f;
+      --accent-soft: #3a1418;
+      --good: #2fbf2f;
+      --warn: #fab219;
+      --crit: #e66767;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0f0f10;
+    --card: #18181a;
+    --line: #2a2a2d;
+    --track: #222225;
+    --ink: #f3f2ee;
+    --ink-2: #b9b7b0;
+    --ink-3: #85837d;
+    --bar: #e9e7e1;
+    --bar-dim: #47464a;
+    --accent: #ff3b4f;
+    --accent-soft: #3a1418;
+    --good: #2fbf2f;
+    --warn: #fab219;
+    --crit: #e66767;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Archivo", system-ui, sans-serif;
+    font-variation-settings: "wdth" 100;
+    font-size: 15px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header { padding: 40px 0 24px; }
+  .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .eyebrow {
+    font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 3px; background: var(--accent); border-radius: 2px; }
+  h1 {
+    margin: 10px 0 6px;
+    font-size: clamp(30px, 5vw, 52px);
+    line-height: 1.02;
+    font-weight: 750;
+    font-variation-settings: "wdth" 118;
+    letter-spacing: -.01em;
+    text-transform: uppercase;
+  }
+  .lede { margin: 0; color: var(--ink-2); max-width: 62ch; }
+  .theme-btn {
+    flex: none; border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    border-radius: 999px; height: 36px; padding: 0 14px; font: inherit; font-size: 13px; cursor: pointer;
+  }
+  .theme-btn:hover { border-color: var(--ink-3); }
+
+  /* Filters */
+  .filters {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    padding: 12px 0;
+  }
+  .filter-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)) auto; gap: 8px; align-items: end; }
+  .f label { display: block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 4px 2px; }
+  .f select {
+    width: 100%; height: 36px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink); font: inherit; font-size: 13.5px; padding: 0 28px 0 10px;
+    appearance: none; cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, var(--ink-3) 50%), linear-gradient(135deg, var(--ink-3) 50%, transparent 50%);
+    background-position: calc(100% - 15px) 15px, calc(100% - 10px) 15px;
+    background-size: 5px 5px; background-repeat: no-repeat;
+  }
+  .f select.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .f select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .clear {
+    height: 36px; border-radius: 8px; border: 1px solid var(--ink); background: var(--ink); color: var(--bg);
+    font: inherit; font-size: 13px; font-weight: 600; padding: 0 14px; cursor: pointer; white-space: nowrap;
+  }
+  .clear:disabled { opacity: .35; cursor: default; }
+  .showing { margin-top: 8px; font-size: 12.5px; color: var(--ink-2); min-height: 18px; }
+  .showing b { color: var(--ink); }
+
+  /* KPIs */
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 22px 0 12px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+  .kpi { padding: 16px 18px 18px; }
+  .kpi .k { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  .kpi .v { font-size: clamp(26px, 3.2vw, 36px); font-weight: 700; font-variation-settings: "wdth" 110; margin-top: 6px; line-height: 1.05; }
+  .kpi .s { font-size: 12.5px; color: var(--ink-3); margin-top: 6px; }
+  .status-bar { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 12px; background: var(--track); }
+  .status-bar span { display: block; height: 100%; transition: width .35s ease; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px; font-size: 12px; color: var(--ink-2); }
+  .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }
+
+  /* Question cards */
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .q { padding: 20px 22px 22px; }
+  .q.full { grid-column: 1 / -1; }
+  .qn { font-size: 12px; font-weight: 700; letter-spacing: .12em; color: var(--accent); text-transform: uppercase; }
+  .q h2 { margin: 6px 0 4px; font-size: 20px; line-height: 1.2; font-weight: 700; font-variation-settings: "wdth" 104; }
+  .why { margin: 0; font-size: 13px; color: var(--ink-3); }
+  .insight {
+    margin: 14px 0 16px; padding: 10px 12px; border-left: 3px solid var(--accent);
+    background: var(--accent-soft); border-radius: 0 8px 8px 0; font-size: 14px; color: var(--ink);
+  }
+  .insight:empty { display: none; }
+  .rest { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--ink-2); }
+  .rest:empty { display: none; }
+  .rest b { color: var(--ink); }
+  .hint { font-size: 12px; color: var(--ink-3); margin-top: 10px; }
+
+  /* Bar lists */
+  .bars { display: grid; gap: 4px; }
+  .row {
+    display: grid; grid-template-columns: var(--label-w, 110px) minmax(0, 1fr) auto; align-items: center; gap: 10px;
+    padding: 5px 6px; margin: 0 -6px; border-radius: 8px; border: 0; background: transparent; color: inherit;
+    font: inherit; text-align: left; cursor: pointer; width: calc(100% + 12px);
+  }
+  .row:hover { background: var(--track); }
+  .row .lab { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .trk { height: 18px; position: relative; }
+  .row .fill {
+    position: absolute; left: 0; top: 0; bottom: 0; background: var(--bar);
+    border-radius: 0 4px 4px 0; min-width: 2px; transition: width .35s ease, background .2s;
+  }
+  .row .val { font-size: 13px; color: var(--ink-2); text-align: right; white-space: nowrap; min-width: 92px; }
+  .row .val b { color: var(--ink); font-weight: 650; }
+  .bars.has-sel .row .fill { background: var(--bar-dim); }
+  .bars .row[aria-pressed="true"] .fill { background: var(--accent); }
+  .bars .row[aria-pressed="true"] .lab { font-weight: 700; }
+
+  .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+  .sub-h { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 8px; }
+
+  .empty { padding: 26px 8px; text-align: center; color: var(--ink-3); font-size: 14px; }
+
+  /* Table */
+  details.card { margin-top: 12px; }
+  details summary {
+    cursor: pointer; list-style: none; padding: 16px 22px; font-weight: 650; display: flex; justify-content: space-between; align-items: center;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 20px; color: var(--ink-3); }
+  details[open] summary::after { content: "–"; }
+  .tbl-wrap { overflow-x: auto; padding: 0 22px 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  th { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; cursor: pointer; user-select: none; }
+  th[data-sort]::after { content: " ↕"; opacity: .4; }
+  th.asc::after { content: " ↑"; opacity: 1; }
+  th.desc::after { content: " ↓"; opacity: 1; }
+  td.r, th.r { text-align: right; }
+  .tag { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 4px; background: var(--track); color: var(--ink-2); }
+
+  /* Tooltip */
+  #tip {
+    position: fixed; z-index: 50; pointer-events: none; opacity: 0; transition: opacity .12s;
+    background: var(--ink); color: var(--bg); border-radius: 8px; padding: 9px 11px; font-size: 12.5px; line-height: 1.5;
+    max-width: 260px; box-shadow: 0 10px 30px -10px rgba(0,0,0,.4);
+  }
+  #tip b { font-weight: 700; }
+  #tip .t { font-weight: 700; margin-bottom: 2px; }
+
+  footer { padding: 28px 0 44px; color: var(--ink-3); font-size: 12.5px; }
+  footer p { margin: 4px 0; max-width: 90ch; }
+  footer a { color: var(--ink-2); }
+
+  @media (max-width: 1100px) {
+    .filter-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .filter-grid .clear { grid-column: 1 / -1; }
+  }
+  @media (max-width: 860px) {
+    .grid, .pair { grid-template-columns: 1fr; }
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 0 16px; }
+    header { padding-top: 26px; }
+    .filters { position: static; }
+    .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .kpis { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .kpi { padding: 12px 14px 14px; }
+    .q { padding: 16px; }
+    .row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 4px; }
+    .row .trk { grid-column: 1 / -1; order: 3; height: 12px; }
+    .row .val { min-width: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="top">
+    <div>
+      <div class="eyebrow">Vendas Porsche · Estados Unidos · 2024–2027</div>
+      <h1>Onde está a receita</h1>
+      <p class="lede">100 vendas tratadas, três perguntas de negócio. Use os filtros ou clique numa barra para recortar a dashboard inteira.</p>
+    </div>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Alternar tema claro/escuro">Tema escuro</button>
+  </div>
+</header>
+
+<section class="filters" aria-label="Filtros">
+  <div class="wrap">
+    <div class="filter-grid" id="filterGrid"></div>
+    <div class="showing" id="showing" aria-live="polite"></div>
+  </div>
+</section>
+
+<main class="wrap">
+  <section class="kpis" aria-label="Indicadores">
+    <div class="card kpi">
+      <div class="k">Vendas</div>
+      <div class="v num" id="kVendas">–</div>
+      <div class="s" id="kVendasS"></div>
+    </div>
+    <div class="card kpi">
+      <div class="k">Receita</div>
+      <div class="v num" id="kReceita">–</div>
+      <div class="s" id="kReceitaS"></div>
+    </div>
+    <div class="card kpi">
+      <div class="k">Ticket médio</div>
+      <div class="v num" id="kTicket">–</div>
+      <div class="s" id="kTicketS"></div>
+    </div>
+    <div class="card kpi">
+      <div class="k">Receita já entregue</div>
+      <div class="v num" id="kEntregue">–</div>
+      <div class="status-bar" id="statusBar" role="img"></div>
+      <div class="legend" id="statusLegend"></div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <article class="card q">
+      <div class="qn">Pergunta 1</div>
+      <h2>Qual família de modelo traz mais receita — pelo volume ou pelo ticket?</h2>
+      <p class="why">Define onde concentrar estoque e esforço comercial.</p>
+      <div class="insight" id="q1Insight"></div>
+      <div class="bars" id="q1Bars" style="--label-w: 86px"></div>
+      <div class="hint">Barra = receita · à direita: nº de vendas e ticket médio. Clique para filtrar.</div>
+    </article>
+
+    <article class="card q">
+      <div class="qn">Pergunta 2</div>
+      <h2>Quais estados concentram a receita?</h2>
+      <p class="why">Mostra os mercados que mais pesam e onde a operação está espalhada.</p>
+      <div class="insight" id="q2Insight"></div>
+      <div class="bars" id="q2Bars" style="--label-w: 64px"></div>
+      <div class="rest" id="q2Rest"></div>
+      <div class="hint">Top 8 estados por receita. Clique para filtrar.</div>
+    </article>
+
+    <article class="card q full">
+      <div class="qn">Pergunta 3</div>
+      <h2>Como o cliente paga — e o método de pagamento muda o ticket?</h2>
+      <p class="why">Ajuda a negociar com bancos e financeiras e a entender o perfil de compra.</p>
+      <div class="insight" id="q3Insight"></div>
+      <div class="pair">
+        <div>
+          <div class="sub-h">Nº de vendas</div>
+          <div class="bars" id="q3Count" style="--label-w: 190px"></div>
+        </div>
+        <div>
+          <div class="sub-h">Ticket médio</div>
+          <div class="bars" id="q3Ticket" style="--label-w: 190px"></div>
+        </div>
+      </div>
+      <div class="hint">As duas listas estão na mesma ordem (por nº de vendas) para comparar linha a linha. Clique para filtrar.</div>
+    </article>
+  </section>
+
+  <details class="card" id="tblBox">
+    <summary><span>Vendas no recorte atual <span class="num" id="tblCount" style="color:var(--ink-3);font-weight:400"></span></span></summary>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="id">ID</th>
+            <th data-sort="ordem_data">Data</th>
+            <th data-sort="modelo">Modelo</th>
+            <th data-sort="ano_modelo" class="r">Ano</th>
+            <th data-sort="preco_usd" class="r">Preço</th>
+            <th data-sort="milhas" class="r">Milhas</th>
+            <th data-sort="pagamento">Pagamento</th>
+            <th data-sort="cidade">Cidade</th>
+            <th data-sort="status">Status</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </details>
+</main>
+
+<footer class="wrap">
+  <p><b>Fonte:</b> planilha de 100 vendas fornecida no desafio da DIO, usando só as colunas sanitizadas. Nome do cliente e vendedor foram removidos antes de embutir os dados.</p>
+  <p id="qualidade"></p>
+  <p>Valores em dólar (US$). Dados fictícios para fins de estudo — não é um produto oficial da Porsche.</p>
+</footer>
+
+<div id="tip" role="tooltip"></div>
+
+<script>
+const DATA = /*DATA_START*/[{"id": 6, "data_venda": NaN, "ano_venda": 2024, "mes_venda": 2, "qualidade_data": "parcial", "modelo": "718 Cayman", "familia": "718", "ano_modelo": 2022, "preco_usd": 79500.0, "milhas": 9800, "pagamento": "Cartão de crédito", "cidade": "Boston", "estado": "MA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 7, "data_venda": "2024-03-14", "ano_venda": 2024, "mes_venda": 3, "qualidade_data": "original", "modelo": "911 Turbo S", "familia": "911", "ano_modelo": 2024, "preco_usd": 235000.0, "milhas": 1200, "pagamento": "Transf. internacional", "cidade": "Seattle", "estado": "WA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 8, "data_venda": "2024-04-18", "ano_venda": 2024, "mes_venda": 4, "qualidade_data": "original", "modelo": "Cayenne Coupe", "familia": "Cayenne", "ano_modelo": 2023, "preco_usd": 112750.0, "milhas": 6400, "pagamento": "Financiamento", "cidade": "Austin", "estado": "TX", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 9, "data_venda": NaN, "ano_venda": 2024, "mes_venda": 4, "qualidade_data": "parcial", "modelo": "Macan S", "familia": "Macan", "ano_modelo": 2021, "preco_usd": 68900.0, "milhas": 28, "pagamento": "Dinheiro", "cidade": "Denver", "estado": "CO", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 10, "data_venda": "2024-05-22", "ano_venda": 2024, "mes_venda": 5, "qualidade_data": "original", "modelo": "Taycan 4S", "familia": "Taycan", "ano_modelo": 2024, "preco_usd": 121000.0, "milhas": 0, "pagamento": "Transferência bancária", "cidade": "Los Angeles", "estado": "CA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 11, "data_venda": "2024-08-06", "ano_venda": 2024, "mes_venda": 8, "qualidade_data": "original", "modelo": "Panamera 4", "familia": "Panamera", "ano_modelo": 2023, "preco_usd": 104500.0, "milhas": 14500, "pagamento": "Cartão de crédito", "cidade": "Miami", "estado": "FL", "status": "Cancelada", "status_grupo": "Cancelada"}, {"id": 12, "data_venda": "2024-07-11", "ano_venda": 2024, "mes_venda": 7, "qualidade_data": "original", "modelo": "911 Carrera S", "familia": "911", "ano_modelo": 2020, "preco_usd": 96300.0, "milhas": 41000, "pagamento": "Leasing", "cidade": "New York", "estado": "NY", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 13, "data_venda": "2024-07-15", "ano_venda": 2024, "mes_venda": 7, "qualidade_data": "recuperada", "modelo": "Cayenne E-Hybrid", "familia": "Cayenne", "ano_modelo": 2022, "preco_usd": 89750.0, "milhas": 11744, "pagamento": "Transf. internacional", "cidade": "San Diego", "estado": "CA", "status": "Aguardando aprovação", "status_grupo": "Em andamento"}, {"id": 14, "data_venda": "2024-08-19", "ano_venda": 2024, "mes_venda": 8, "qualidade_data": "original", "modelo": "718 Boxster", "familia": "718", "ano_modelo": 2021, "preco_usd": 73500.0, "milhas": 22300, "pagamento": "Cartão de débito", "cidade": "Chicago", "estado": "IL", "status": "Despachada", "status_grupo": "Em andamento"}, {"id": 15, "data_venda": "2024-09-02", "ano_venda": 2024, "mes_venda": 9, "qualidade_data": "original", "modelo": "Macan GTS", "familia": "Macan", "ano_modelo": 2024, "preco_usd": 95000.0, "milhas": 3500, "pagamento": "Financiamento", "cidade": "Phoenix", "estado": "AZ", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 16, "data_venda": "2024-09-17", "ano_venda": 2024, "mes_venda": 9, "qualidade_data": "original", "modelo": "Taycan Turbo", "familia": "Taycan", "ano_modelo": 2023, "preco_usd": 153200.5, "milhas": 11, "pagamento": "ACH", "cidade": "Dallas", "estado": "TX", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 17, "data_venda": NaN, "ano_venda": 2024, "mes_venda": 10, "qualidade_data": "parcial", "modelo": "911 GT3", "familia": "911", "ano_modelo": 2024, "preco_usd": 241000.0, "milhas": 750, "pagamento": "Transf. internacional", "cidade": "Las Vegas", "estado": "NV", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 18, "data_venda": "2024-05-11", "ano_venda": 2024, "mes_venda": 5, "qualidade_data": "original", "modelo": "Panamera Turbo S", "familia": "Panamera", "ano_modelo": 2022, "preco_usd": 132000.0, "milhas": 19250, "pagamento": "Dinheiro", "cidade": "San Jose", "estado": "CA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 19, "data_venda": "2024-12-12", "ano_venda": 2024, "mes_venda": 12, "qualidade_data": "original", "modelo": "Cayenne Turbo GT", "familia": "Cayenne", "ano_modelo": 2024, "preco_usd": 188000.0, "milhas": 2100, "pagamento": "Cripto", "cidade": "Houston", "estado": "TX", "status": "Aguardando entrega", "status_grupo": "Em andamento"}, {"id": 20, "data_venda": "2024-12-25", "ano_venda": 2024, "mes_venda": 12, "qualidade_data": "original", "modelo": "911 Carrera Cabriolet", "familia": "911", "ano_modelo": 2023, "preco_usd": 127800.0, "milhas": 12000, "pagamento": "Cartão de crédito", "cidade": "Atlanta", "estado": "GA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 21, "data_venda": "2025-01-06", "ano_venda": 2025, "mes_venda": 1, "qualidade_data": "original", "modelo": "Macan", "familia": "Macan", "ano_modelo": 2021, "preco_usd": 58900.0, "milhas": 33700, "pagamento": "Transferência bancária", "cidade": "Orlando", "estado": "FL", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 22, "data_venda": NaN, "ano_venda": 2025, "mes_venda": 1, "qualidade_data": "parcial", "modelo": "718 Spyder RS", "familia": "718", "ano_modelo": 2024, "preco_usd": 164000.0, "milhas": 900, "pagamento": "Financiamento", "cidade": "Portland", "estado": "OR", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 23, "data_venda": "2025-02-14", "ano_venda": 2025, "mes_venda": 2, "qualidade_data": "original", "modelo": "Taycan Cross Turismo", "familia": "Taycan", "ano_modelo": 2023, "preco_usd": 118500.0, "milhas": 7800, "pagamento": "Transf. internacional", "cidade": "Charlotte", "estado": "NC", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 24, "data_venda": NaN, "ano_venda": 2025, "mes_venda": 2, "qualidade_data": "parcial", "modelo": "Cayenne S", "familia": "Cayenne", "ano_modelo": 2022, "preco_usd": 91300.0, "milhas": 16000, "pagamento": "Cartão de crédito", "cidade": "Nashville", "estado": "TN", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 25, "data_venda": "2025-03-21", "ano_venda": 2025, "mes_venda": 3, "qualidade_data": "original", "modelo": "911 Targa 4S", "familia": "911", "ano_modelo": 2024, "preco_usd": 158750.0, "milhas": 2500, "pagamento": "Leasing", "cidade": "Minneapolis", "estado": "MN", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 26, "data_venda": "2025-03-28", "ano_venda": 2025, "mes_venda": 3, "qualidade_data": "original", "modelo": "Panamera", "familia": "Panamera", "ano_modelo": 2020, "preco_usd": 72000.0, "milhas": 49000, "pagamento": "Transferência bancária", "cidade": "Philadelphia", "estado": "PA", "status": "Cancelada", "status_grupo": "Cancelada"}, {"id": 27, "data_venda": "2025-04-09", "ano_venda": 2025, "mes_venda": 4, "qualidade_data": "original", "modelo": "Macan Electric", "familia": "Macan", "ano_modelo": 2025, "preco_usd": 86500.0, "milhas": 0, "pagamento": "Transf. internacional", "cidade": "San Antonio", "estado": "TX", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 28, "data_venda": NaN, "ano_venda": 2025, "mes_venda": 4, "qualidade_data": "parcial", "modelo": "911 Dakar", "familia": "911", "ano_modelo": 2024, "preco_usd": 270000.0, "milhas": 1050, "pagamento": "Dinheiro", "cidade": "Salt Lake City", "estado": "UT", "status": "Aguardando retirada", "status_grupo": "Em andamento"}, {"id": 29, "data_venda": "2025-05-12", "ano_venda": 2025, "mes_venda": 5, "qualidade_data": "original", "modelo": "Taycan GTS", "familia": "Taycan", "ano_modelo": 2023, "preco_usd": 139000.0, "milhas": 6250, "pagamento": "Financiamento", "cidade": "Raleigh", "estado": "NC", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 30, "data_venda": "2025-06-18", "ano_venda": 2025, "mes_venda": 6, "qualidade_data": "original", "modelo": "Cayenne", "familia": "Cayenne", "ano_modelo": 2021, "preco_usd": 76800.0, "milhas": 38400, "pagamento": "Cartão de crédito", "cidade": "Detroit", "estado": "MI", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 31, "data_venda": NaN, "ano_venda": 2025, "mes_venda": 6, "qualidade_data": "parcial", "modelo": "718 Cayman GT4 RS", "familia": "718", "ano_modelo": 2024, "preco_usd": 173600.0, "milhas": 400, "pagamento": "Transf. internacional", "cidade": "Columbus", "estado": "OH", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 32, "data_venda": "2025-07-07", "ano_venda": 2025, "mes_venda": 7, "qualidade_data": "original", "modelo": "911 Carrera GTS", "familia": "911", "ano_modelo": 2022, "preco_usd": 119900.0, "milhas": 13600, "pagamento": "Dinheiro", "cidade": "Indianapolis", "estado": "IN", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 33, "data_venda": "2025-07-22", "ano_venda": 2025, "mes_venda": 7, "qualidade_data": "original", "modelo": "Panamera 4 E-Hybrid", "familia": "Panamera", "ano_modelo": 2023, "preco_usd": 109250.0, "milhas": 8900, "pagamento": "Leasing", "cidade": "Fort Worth", "estado": "TX", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 34, "data_venda": "2025-08-14", "ano_venda": 2025, "mes_venda": 8, "qualidade_data": "original", "modelo": "Macan T", "familia": "Macan", "ano_modelo": 2022, "preco_usd": 82000.0, "milhas": 21750, "pagamento": "Transf. internacional", "cidade": "Jacksonville", "estado": "FL", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 35, "data_venda": "2025-09-01", "ano_venda": 2025, "mes_venda": 9, "qualidade_data": "original", "modelo": "Taycan Turbo S", "familia": "Taycan", "ano_modelo": 2025, "preco_usd": 214000.0, "milhas": 0, "pagamento": "Cripto", "cidade": "San Diego", "estado": "CA", "status": "Em análise", "status_grupo": "Em andamento"}, {"id": 36, "data_venda": NaN, "ano_venda": 2025, "mes_venda": 9, "qualidade_data": "parcial", "modelo": "911 Carrera", "familia": "911", "ano_modelo": 2024, "preco_usd": 124500.0, "milhas": 4800, "pagamento": "Cartão de crédito", "cidade": "Tampa", "estado": "FL", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 37, "data_venda": "2025-09-18", "ano_venda": 2025, "mes_venda": 9, "qualidade_data": "original", "modelo": "Cayenne S", "familia": "Cayenne", "ano_modelo": 2023, "preco_usd": 98200.0, "milhas": 12200, "pagamento": "Transferência bancária", "cidade": "Sacramento", "estado": "CA", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 38, "data_venda": "2025-10-04", "ano_venda": 2025, "mes_venda": 10, "qualidade_data": "original", "modelo": "Macan", "familia": "Macan", "ano_modelo": 2022, "preco_usd": 67500.0, "milhas": 24100, "pagamento": "Financiamento", "cidade": "Cleveland", "estado": "OH", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 39, "data_venda": "2025-10-12", "ano_venda": 2025, "mes_venda": 10, "qualidade_data": "original", "modelo": "Taycan", "familia": "Taycan", "ano_modelo": 2025, "preco_usd": 116900.0, "milhas": 0, "pagamento": "Transf. internacional", "cidade": "Milwaukee", "estado": "WI", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 40, "data_venda": "2025-10-29", "ano_venda": 2025, "mes_venda": 10, "qualidade_data": "original", "modelo": "Panamera 4S", "familia": "Panamera", "ano_modelo": 2024, "preco_usd": 112000.0, "milhas": 10, "pagamento": "Dinheiro", "cidade": "Kansas City", "estado": "MO", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 41, "data_venda": "2025-02-11", "ano_venda": 2025, "mes_venda": 2, "qualidade_data": "original", "modelo": "718 Boxster", "familia": "718", "ano_modelo": 2021, "preco_usd": 74000.0, "milhas": 31000, "pagamento": "Cartão de débito", "cidade": "Omaha", "estado": "NE", "status": "Cancelada", "status_grupo": "Cancelada"}, {"id": 42, "data_venda": "2025-11-16", "ano_venda": 2025, "mes_venda": 11, "qualidade_data": "original", "modelo": "911 Turbo", "familia": "911", "ano_modelo": 2024, "preco_usd": 198300.0, "milhas": 2400, "pagamento": "Transf. internacional", "cidade": "Albuquerque", "estado": "NM", "status": "Aguardando entrega", "status_grupo": "Em andamento"}, {"id": 43, "data_venda": "2025-11-18", "ano_venda": 2025, "mes_venda": 11, "qualidade_data": "recuperada", "modelo": "Cayenne Coupe", "familia": "Cayenne", "ano_modelo": 2023, "preco_usd": 103750.0, "milhas": 6773, "pagamento": "Transf. internacional", "cidade": "Tucson", "estado": "AZ", "status": "Aguardando aprovação", "status_grupo": "Em andamento"}, {"id": 44, "data_venda": NaN, "ano_venda": 2025, "mes_venda": 11, "qualidade_data": "parcial", "modelo": "Macan GTS", "familia": "Macan", "ano_modelo": 2024, "preco_usd": 93600.0, "milhas": 5800, "pagamento": "Financiamento", "cidade": "Fresno", "estado": "CA", "status": "Despachada", "status_grupo": "Em andamento"}, {"id": 45, "data_venda": "2025-12-07", "ano_venda": 2025, "mes_venda": 12, "qualidade_data": "original", "modelo": "Taycan 4S", "familia": "Taycan", "ano_modelo": 2025, "preco_usd": 129000.0, "milhas": 0, "pagamento": "ACH", "cidade": "Virginia Beach", "estado": "VA", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 46, "data_venda": "2025-12-22", "ano_venda": 2025, "mes_venda": 12, "qualidade_data": "original", "modelo": "Panamera Turbo", "familia": "Panamera", "ano_modelo": 2022, "preco_usd": 136000.0, "milhas": 18400, "pagamento": "Cartão de crédito", "cidade": "Colorado Springs", "estado": "CO", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 47, "data_venda": NaN, "ano_venda": 2025, "mes_venda": 12, "qualidade_data": "parcial", "modelo": "911 GT3 RS", "familia": "911", "ano_modelo": 2024, "preco_usd": 286500.0, "milhas": 700, "pagamento": "Transf. internacional", "cidade": "Arlington", "estado": "TX", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 48, "data_venda": "2026-01-08", "ano_venda": 2026, "mes_venda": 1, "qualidade_data": "original", "modelo": "Cayenne E-Hybrid", "familia": "Cayenne", "ano_modelo": 2023, "preco_usd": 92800.0, "milhas": 15000, "pagamento": "Leasing", "cidade": "Bakersfield", "estado": "CA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 49, "data_venda": "2026-01-15", "ano_venda": 2026, "mes_venda": 1, "qualidade_data": "original", "modelo": "Macan T", "familia": "Macan", "ano_modelo": 2022, "preco_usd": 72400.0, "milhas": 19750, "pagamento": "Dinheiro", "cidade": "Mesa", "estado": "AZ", "status": "Aguardando retirada", "status_grupo": "Em andamento"}, {"id": 50, "data_venda": "2026-01-28", "ano_venda": 2026, "mes_venda": 1, "qualidade_data": "original", "modelo": "Taycan Turbo", "familia": "Taycan", "ano_modelo": 2025, "preco_usd": 158500.0, "milhas": 3200, "pagamento": "Cripto", "cidade": "Atlanta", "estado": "GA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 51, "data_venda": "2026-02-03", "ano_venda": 2026, "mes_venda": 2, "qualidade_data": "original", "modelo": "718 Cayman", "familia": "718", "ano_modelo": 2021, "preco_usd": 69900.0, "milhas": 27600, "pagamento": "Transferência bancária", "cidade": "Long Beach", "estado": "CA", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 52, "data_venda": NaN, "ano_venda": 2026, "mes_venda": 2, "qualidade_data": "parcial", "modelo": "911 Targa 4", "familia": "911", "ano_modelo": 2024, "preco_usd": 141250.0, "milhas": 2100, "pagamento": "Financiamento", "cidade": "Oakland", "estado": "CA", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 53, "data_venda": "2026-02-19", "ano_venda": 2026, "mes_venda": 2, "qualidade_data": "original", "modelo": "Panamera", "familia": "Panamera", "ano_modelo": 2020, "preco_usd": 71500.0, "milhas": 52000, "pagamento": "Transf. internacional", "cidade": "Tulsa", "estado": "OK", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 54, "data_venda": "2026-02-25", "ano_venda": 2026, "mes_venda": 2, "qualidade_data": "original", "modelo": "Cayenne Turbo", "familia": "Cayenne", "ano_modelo": 2023, "preco_usd": 146800.0, "milhas": 11300, "pagamento": "Cartão de crédito", "cidade": "Wichita", "estado": "KS", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 55, "data_venda": "2026-03-01", "ano_venda": 2026, "mes_venda": 3, "qualidade_data": "original", "modelo": "Macan Electric", "familia": "Macan", "ano_modelo": 2025, "preco_usd": 89700.0, "milhas": 0, "pagamento": "Leasing", "cidade": "New Orleans", "estado": "LA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 56, "data_venda": "2026-03-14", "ano_venda": 2026, "mes_venda": 3, "qualidade_data": "original", "modelo": "911 Carrera S", "familia": "911", "ano_modelo": 2022, "preco_usd": 104600.0, "milhas": 15900, "pagamento": "Transferência bancária", "cidade": "Honolulu", "estado": "HI", "status": "Cancelada", "status_grupo": "Cancelada"}, {"id": 57, "data_venda": NaN, "ano_venda": 2026, "mes_venda": 3, "qualidade_data": "parcial", "modelo": "Taycan GTS", "familia": "Taycan", "ano_modelo": 2024, "preco_usd": 142000.0, "milhas": 6600, "pagamento": "Transf. internacional", "cidade": "Anaheim", "estado": "CA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 58, "data_venda": "2026-04-08", "ano_venda": 2026, "mes_venda": 4, "qualidade_data": "original", "modelo": "Cayenne", "familia": "Cayenne", "ano_modelo": 2021, "preco_usd": 78400.0, "milhas": 40250, "pagamento": "Dinheiro", "cidade": "Henderson", "estado": "NV", "status": "Em análise", "status_grupo": "Em andamento"}, {"id": 59, "data_venda": NaN, "ano_venda": 2026, "mes_venda": 4, "qualidade_data": "parcial", "modelo": "718 Spyder RS", "familia": "718", "ano_modelo": 2025, "preco_usd": 169000.0, "milhas": 850, "pagamento": "Financiamento", "cidade": "Lexington", "estado": "KY", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 60, "data_venda": "2026-04-21", "ano_venda": 2026, "mes_venda": 4, "qualidade_data": "original", "modelo": "911 Dakar", "familia": "911", "ano_modelo": 2024, "preco_usd": 268900.0, "milhas": 1400, "pagamento": "Cartão de crédito", "cidade": "Riverside", "estado": "CA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 61, "data_venda": "2026-04-29", "ano_venda": 2026, "mes_venda": 4, "qualidade_data": "original", "modelo": "Panamera 4", "familia": "Panamera", "ano_modelo": 2023, "preco_usd": 101300.0, "milhas": 12700, "pagamento": "Transf. internacional", "cidade": "Corpus Christi", "estado": "TX", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 62, "data_venda": "2026-05-05", "ano_venda": 2026, "mes_venda": 5, "qualidade_data": "original", "modelo": "Macan S", "familia": "Macan", "ano_modelo": 2021, "preco_usd": 66750.0, "milhas": 29800, "pagamento": "Dinheiro", "cidade": "St. Louis", "estado": "MO", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 63, "data_venda": "2026-05-14", "ano_venda": 2026, "mes_venda": 5, "qualidade_data": "original", "modelo": "Taycan Cross Turismo", "familia": "Taycan", "ano_modelo": 2024, "preco_usd": 127900.0, "milhas": 7500, "pagamento": "Leasing", "cidade": "Pittsburgh", "estado": "PA", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 64, "data_venda": "2026-05-23", "ano_venda": 2026, "mes_venda": 5, "qualidade_data": "original", "modelo": "Cayenne Turbo GT", "familia": "Cayenne", "ano_modelo": 2025, "preco_usd": 200000.0, "milhas": 1950, "pagamento": "Transf. internacional", "cidade": "Cincinnati", "estado": "OH", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 65, "data_venda": "2026-06-02", "ano_venda": 2026, "mes_venda": 6, "qualidade_data": "original", "modelo": "911 Carrera Cabriolet", "familia": "911", "ano_modelo": 2023, "preco_usd": 132000.0, "milhas": 8800, "pagamento": "Cripto", "cidade": "Anchorage", "estado": "AK", "status": "Em análise", "status_grupo": "Em andamento"}, {"id": 66, "data_venda": "2026-06-15", "ano_venda": 2026, "mes_venda": 6, "qualidade_data": "original", "modelo": "718 Cayman GT4 RS", "familia": "718", "ano_modelo": 2024, "preco_usd": 176400.0, "milhas": 600, "pagamento": "Cartão de crédito", "cidade": "Plano", "estado": "TX", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 67, "data_venda": NaN, "ano_venda": 2026, "mes_venda": 6, "qualidade_data": "parcial", "modelo": "Panamera 4 E-Hybrid", "familia": "Panamera", "ano_modelo": 2022, "preco_usd": 108500.0, "milhas": 16200, "pagamento": "Transferência bancária", "cidade": "Newark", "estado": "NJ", "status": "Cancelada", "status_grupo": "Cancelada"}, {"id": 68, "data_venda": "2026-07-07", "ano_venda": 2026, "mes_venda": 7, "qualidade_data": "original", "modelo": "Macan", "familia": "Macan", "ano_modelo": 2021, "preco_usd": 59000.0, "milhas": 36000, "pagamento": "Financiamento", "cidade": "Greensboro", "estado": "NC", "status": "Aguardando entrega", "status_grupo": "Em andamento"}, {"id": 69, "data_venda": "2026-07-20", "ano_venda": 2026, "mes_venda": 7, "qualidade_data": "original", "modelo": "Taycan Turbo S", "familia": "Taycan", "ano_modelo": 2025, "preco_usd": 218000.0, "milhas": 0, "pagamento": "Transf. internacional", "cidade": "Lincoln", "estado": "NE", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 70, "data_venda": NaN, "ano_venda": 2026, "mes_venda": 7, "qualidade_data": "parcial", "modelo": "Cayenne S", "familia": "Cayenne", "ano_modelo": 2024, "preco_usd": 99950.0, "milhas": 5300, "pagamento": "Cartão de débito", "cidade": "Jersey City", "estado": "NJ", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 71, "data_venda": "2026-04-08", "ano_venda": 2026, "mes_venda": 4, "qualidade_data": "original", "modelo": "911 Carrera GTS", "familia": "911", "ano_modelo": 2024, "preco_usd": 121750.0, "milhas": 5872, "pagamento": "Cartão de crédito", "cidade": "Chandler", "estado": "AZ", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 72, "data_venda": "2026-08-18", "ano_venda": 2026, "mes_venda": 8, "qualidade_data": "original", "modelo": "718 Boxster GTS", "familia": "718", "ano_modelo": 2023, "preco_usd": 91500.0, "milhas": 13300, "pagamento": "Leasing", "cidade": "Reno", "estado": "NV", "status": "Despachada", "status_grupo": "Em andamento"}, {"id": 73, "data_venda": "2026-08-31", "ano_venda": 2026, "mes_venda": 8, "qualidade_data": "original", "modelo": "Panamera Turbo S", "familia": "Panamera", "ano_modelo": 2022, "preco_usd": 134000.0, "milhas": 20100, "pagamento": "Transf. internacional", "cidade": "Buffalo", "estado": "NY", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 74, "data_venda": "2026-09-09", "ano_venda": 2026, "mes_venda": 9, "qualidade_data": "original", "modelo": "Macan GTS", "familia": "Macan", "ano_modelo": 2024, "preco_usd": 96800.0, "milhas": 0, "pagamento": "ACH", "cidade": "Durham", "estado": "NC", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 75, "data_venda": "2026-09-17", "ano_venda": 2026, "mes_venda": 9, "qualidade_data": "original", "modelo": "Taycan 4S", "familia": "Taycan", "ano_modelo": 2025, "preco_usd": 131600.0, "milhas": 2900, "pagamento": "Transf. internacional", "cidade": "Laredo", "estado": "TX", "status": "Aguardando aprovação", "status_grupo": "Em andamento"}, {"id": 76, "data_venda": "2026-09-28", "ano_venda": 2026, "mes_venda": 9, "qualidade_data": "original", "modelo": "Cayenne E-Hybrid", "familia": "Cayenne", "ano_modelo": 2023, "preco_usd": 94300.0, "milhas": 13100, "pagamento": "Dinheiro", "cidade": "Madison", "estado": "WI", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 77, "data_venda": "2026-10-06", "ano_venda": 2026, "mes_venda": 10, "qualidade_data": "original", "modelo": "911 Turbo S", "familia": "911", "ano_modelo": 2025, "preco_usd": 242000.0, "milhas": 1100, "pagamento": "Cripto", "cidade": "Lubbock", "estado": "TX", "status": "Aguardando retirada", "status_grupo": "Em andamento"}, {"id": 78, "data_venda": "2026-10-16", "ano_venda": 2026, "mes_venda": 10, "qualidade_data": "original", "modelo": "718 Cayman S", "familia": "718", "ano_modelo": 2022, "preco_usd": 82750.0, "milhas": 22500, "pagamento": "Cartão de crédito", "cidade": "Toledo", "estado": "OH", "status": "Cancelada", "status_grupo": "Cancelada"}, {"id": 79, "data_venda": "2026-10-29", "ano_venda": 2026, "mes_venda": 10, "qualidade_data": "original", "modelo": "Macan Electric", "familia": "Macan", "ano_modelo": 2026, "preco_usd": 91300.0, "milhas": 0, "pagamento": "Transf. internacional", "cidade": "Irvine", "estado": "CA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 80, "data_venda": "2026-11-03", "ano_venda": 2026, "mes_venda": 11, "qualidade_data": "original", "modelo": "Panamera", "familia": "Panamera", "ano_modelo": 2021, "preco_usd": 79900.0, "milhas": 44800, "pagamento": "Financiamento", "cidade": "Garland", "estado": "TX", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 81, "data_venda": NaN, "ano_venda": 2026, "mes_venda": 11, "qualidade_data": "parcial", "modelo": "Cayenne Coupe", "familia": "Cayenne", "ano_modelo": 2024, "preco_usd": 111000.0, "milhas": 6700, "pagamento": "Transferência bancária", "cidade": "Irving", "estado": "TX", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 82, "data_venda": "2026-12-11", "ano_venda": 2026, "mes_venda": 12, "qualidade_data": "original", "modelo": "911 Targa 4S", "familia": "911", "ano_modelo": 2023, "preco_usd": 156500.0, "milhas": 4200, "pagamento": "Dinheiro", "cidade": "Chesapeake", "estado": "VA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 83, "data_venda": "2026-12-24", "ano_venda": 2026, "mes_venda": 12, "qualidade_data": "original", "modelo": "Taycan", "familia": "Taycan", "ano_modelo": 2025, "preco_usd": 119900.0, "milhas": 1250, "pagamento": "Leasing", "cidade": "Scottsdale", "estado": "AZ", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 84, "data_venda": NaN, "ano_venda": 2026, "mes_venda": 12, "qualidade_data": "parcial", "modelo": "Macan T", "familia": "Macan", "ano_modelo": 2022, "preco_usd": 73200.0, "milhas": 18600, "pagamento": "Transf. internacional", "cidade": "Norfolk", "estado": "VA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 85, "data_venda": "2026-12-28", "ano_venda": 2026, "mes_venda": 12, "qualidade_data": "original", "modelo": "911 GT3", "familia": "911", "ano_modelo": 2024, "preco_usd": 224000.0, "milhas": 3000, "pagamento": "Transf. internacional", "cidade": "Boise", "estado": "ID", "status": "Aguardando entrega", "status_grupo": "Em andamento"}, {"id": 86, "data_venda": "2027-01-15", "ano_venda": 2027, "mes_venda": 1, "qualidade_data": "original", "modelo": "911 Carrera", "familia": "911", "ano_modelo": 2024, "preco_usd": 126900.0, "milhas": 7200, "pagamento": "Cartão de crédito", "cidade": "Orlando", "estado": "FL", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 87, "data_venda": "2027-01-29", "ano_venda": 2027, "mes_venda": 1, "qualidade_data": "original", "modelo": "Cayenne", "familia": "Cayenne", "ano_modelo": 2023, "preco_usd": 84500.0, "milhas": 21400, "pagamento": "Transferência bancária", "cidade": "San Jose", "estado": "CA", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 88, "data_venda": "2027-02-11", "ano_venda": 2027, "mes_venda": 2, "qualidade_data": "original", "modelo": "Macan S", "familia": "Macan", "ano_modelo": 2022, "preco_usd": 69800.0, "milhas": 26300, "pagamento": "Financiamento", "cidade": "Tampa", "estado": "FL", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 89, "data_venda": NaN, "ano_venda": 2027, "mes_venda": 2, "qualidade_data": "parcial", "modelo": "Taycan 4S", "familia": "Taycan", "ano_modelo": 2025, "preco_usd": 132700.0, "milhas": 0, "pagamento": "Transf. internacional", "cidade": "Denver", "estado": "CO", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 90, "data_venda": "2027-03-05", "ano_venda": 2027, "mes_venda": 3, "qualidade_data": "original", "modelo": "Panamera", "familia": "Panamera", "ano_modelo": 2021, "preco_usd": 81000.0, "milhas": 42, "pagamento": "Dinheiro", "cidade": "Austin", "estado": "TX", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 91, "data_venda": "2027-03-18", "ano_venda": 2027, "mes_venda": 3, "qualidade_data": "original", "modelo": "718 Cayman", "familia": "718", "ano_modelo": 2023, "preco_usd": 78900.0, "milhas": 17500, "pagamento": "Cartão de débito", "cidade": "Seattle", "estado": "WA", "status": "Cancelada", "status_grupo": "Cancelada"}, {"id": 92, "data_venda": "2027-04-02", "ano_venda": 2027, "mes_venda": 4, "qualidade_data": "original", "modelo": "911 Turbo S", "familia": "911", "ano_modelo": 2026, "preco_usd": 249300.0, "milhas": 900, "pagamento": "Transf. internacional", "cidade": "Boston", "estado": "MA", "status": "Aguardando entrega", "status_grupo": "Em andamento"}, {"id": 93, "data_venda": "2027-04-15", "ano_venda": 2027, "mes_venda": 4, "qualidade_data": "recuperada", "modelo": "Cayenne Coupe", "familia": "Cayenne", "ano_modelo": 2024, "preco_usd": 108750.0, "milhas": 5530, "pagamento": "Transf. internacional", "cidade": "Phoenix", "estado": "AZ", "status": "Aguardando aprovação", "status_grupo": "Em andamento"}, {"id": 94, "data_venda": NaN, "ano_venda": 2027, "mes_venda": 4, "qualidade_data": "parcial", "modelo": "Macan Electric", "familia": "Macan", "ano_modelo": 2026, "preco_usd": 92600.0, "milhas": 0, "pagamento": "Financiamento", "cidade": "Chicago", "estado": "IL", "status": "Despachada", "status_grupo": "Em andamento"}, {"id": 95, "data_venda": "2027-05-12", "ano_venda": 2027, "mes_venda": 5, "qualidade_data": "original", "modelo": "Taycan Turbo", "familia": "Taycan", "ano_modelo": 2025, "preco_usd": 164000.0, "milhas": 0, "pagamento": "ACH", "cidade": "Dallas", "estado": "TX", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 96, "data_venda": "2027-05-27", "ano_venda": 2027, "mes_venda": 5, "qualidade_data": "original", "modelo": "Panamera 4S", "familia": "Panamera", "ano_modelo": 2024, "preco_usd": 119000.0, "milhas": 13400, "pagamento": "Cartão de crédito", "cidade": "San Francisco", "estado": "CA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 97, "data_venda": NaN, "ano_venda": 2027, "mes_venda": 6, "qualidade_data": "parcial", "modelo": "911 GT3", "familia": "911", "ano_modelo": 2026, "preco_usd": 232500.0, "milhas": 1700, "pagamento": "Transf. internacional", "cidade": "Las Vegas", "estado": "NV", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 98, "data_venda": "2027-06-18", "ano_venda": 2027, "mes_venda": 6, "qualidade_data": "original", "modelo": "Cayenne E-Hybrid", "familia": "Cayenne", "ano_modelo": 2023, "preco_usd": 96800.0, "milhas": 14000, "pagamento": "Leasing", "cidade": "Charlotte", "estado": "NC", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 99, "data_venda": "2027-07-03", "ano_venda": 2027, "mes_venda": 7, "qualidade_data": "original", "modelo": "Macan T", "familia": "Macan", "ano_modelo": 2022, "preco_usd": 74400.0, "milhas": 20750, "pagamento": "Dinheiro", "cidade": "Mesa", "estado": "AZ", "status": "Aguardando retirada", "status_grupo": "Em andamento"}, {"id": 100, "data_venda": "2027-07-22", "ano_venda": 2027, "mes_venda": 7, "qualidade_data": "original", "modelo": "Taycan GTS", "familia": "Taycan", "ano_modelo": 2025, "preco_usd": 148500.0, "milhas": 5200, "pagamento": "Cripto", "cidade": "Atlanta", "estado": "GA", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 101, "data_venda": "2027-08-08", "ano_venda": 2027, "mes_venda": 8, "qualidade_data": "original", "modelo": "718 Boxster", "familia": "718", "ano_modelo": 2021, "preco_usd": 71900.0, "milhas": 29600, "pagamento": "Transferência bancária", "cidade": "Long Beach", "estado": "CA", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 102, "data_venda": NaN, "ano_venda": 2027, "mes_venda": 8, "qualidade_data": "parcial", "modelo": "911 Targa 4", "familia": "911", "ano_modelo": 2024, "preco_usd": 143250.0, "milhas": 3100, "pagamento": "Financiamento", "cidade": "Oakland", "estado": "CA", "status": "Em trânsito", "status_grupo": "Em andamento"}, {"id": 103, "data_venda": "2027-09-19", "ano_venda": 2027, "mes_venda": 9, "qualidade_data": "original", "modelo": "Panamera Turbo", "familia": "Panamera", "ano_modelo": 2020, "preco_usd": 137500.0, "milhas": 48000, "pagamento": "Transf. internacional", "cidade": "Tulsa", "estado": "OK", "status": "Entregue", "status_grupo": "Entregue"}, {"id": 104, "data_venda": "2027-09-25", "ano_venda": 2027, "mes_venda": 9, "qualidade_data": "original", "modelo": "Cayenne Turbo GT", "familia": "Cayenne", "ano_modelo": 2025, "preco_usd": 204800.0, "milhas": 3300, "pagamento": "Cartão de crédito", "cidade": "Wichita", "estado": "KS", "status": "Pendente", "status_grupo": "Em andamento"}, {"id": 105, "data_venda": "2027-10-01", "ano_venda": 2027, "mes_venda": 10, "qualidade_data": "original", "modelo": "911 Dakar", "familia": "911", "ano_modelo": 2024, "preco_usd": 271700.0, "milhas": 1050, "pagamento": "Leasing", "cidade": "New Orleans", "estado": "LA", "status": "Entregue", "status_grupo": "Entregue"}]/*DATA_END*/;
+
+/* ---------- Formatação ---------- */
+const nf0 = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+const nf1 = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+function usd(v) {
+  if (v >= 1e6) return "US$ " + nf1.format(v / 1e6) + " mi";
+  if (v >= 1e3) return "US$ " + nf0.format(v / 1e3) + " mil";
+  return "US$ " + nf0.format(v);
+}
+const usdFull = (v) => "US$ " + nf0.format(v);
+const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0) + "%";
+const MESES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+DATA.forEach(d => {
+  d.ordem_data = d.ano_venda * 100 + d.mes_venda + (d.data_venda ? Number(d.data_venda.slice(8, 10)) / 100 : 0);
+});
+
+/* ---------- Filtros ---------- */
+const FILTERS = [
+  { key: "familia",      label: "Família" },
+  { key: "modelo",       label: "Modelo" },
+  { key: "estado",       label: "Estado" },
+  { key: "cidade",       label: "Cidade" },
+  { key: "ano_venda",    label: "Ano da venda" },
+  { key: "ano_modelo",   label: "Ano do modelo" },
+  { key: "pagamento",    label: "Pagamento" },
+  { key: "status_grupo", label: "Entrega" },
+];
+const state = Object.fromEntries(FILTERS.map(f => [f.key, ""]));
+
+const matches = (d, except) =>
+  FILTERS.every(f => f.key === except || state[f.key] === "" || String(d[f.key]) === state[f.key]);
+
+const grid = document.getElementById("filterGrid");
+FILTERS.forEach(f => {
+  const wrap = document.createElement("div");
+  wrap.className = "f";
+  wrap.innerHTML = `<label for="f_${f.key}">${f.label}</label><select id="f_${f.key}"></select>`;
+  grid.appendChild(wrap);
+  wrap.querySelector("select").addEventListener("change", e => setFilter(f.key, e.target.value, true));
+});
+const clearBtn = document.createElement("button");
+clearBtn.className = "clear"; clearBtn.type = "button"; clearBtn.textContent = "Limpar filtros";
+clearBtn.addEventListener("click", () => { FILTERS.forEach(f => state[f.key] = ""); render(); });
+grid.appendChild(clearBtn);
+
+function setFilter(key, value, exact) {
+  state[key] = exact ? value : (state[key] === value ? "" : value);
+  // Filtros dependentes: se o modelo não pertence à família, ou cidade ao estado, limpa
+  if (key === "familia" && state.modelo && !DATA.some(d => d.modelo === state.modelo && (state.familia === "" || d.familia === state.familia))) state.modelo = "";
+  if (key === "estado" && state.cidade && !DATA.some(d => d.cidade === state.cidade && (state.estado === "" || d.estado === state.estado))) state.cidade = "";
+  render();
+}
+
+function renderSelects() {
+  FILTERS.forEach(f => {
+    const sel = document.getElementById("f_" + f.key);
+    const pool = DATA.filter(d => matches(d, f.key));
+    const counts = new Map();
+    pool.forEach(d => counts.set(String(d[f.key]), (counts.get(String(d[f.key])) || 0) + 1));
+    let keys = [...new Set(DATA.map(d => String(d[f.key])))];
+    const numeric = keys.every(k => /^\d+$/.test(k));
+    keys.sort((a, b) => numeric ? a - b : a.localeCompare(b, "pt-BR"));
+    if (f.key === "status_grupo") keys = ["Entregue", "Em andamento", "Cancelada"];
+    // esconde opções sem venda no recorte, mas mantém a selecionada
+    keys = keys.filter(k => counts.get(k) || k === state[f.key]);
+    sel.innerHTML = `<option value="">Todos</option>` +
+      keys.map(k => `<option value="${k}" ${k === state[f.key] ? "selected" : ""}>${k} (${counts.get(k) || 0})</option>`).join("");
+    sel.classList.toggle("on", state[f.key] !== "");
+  });
+}
+
+/* ---------- Agregação ---------- */
+function groupBy(rows, key) {
+  const m = new Map();
+  rows.forEach(d => {
+    const k = String(d[key]);
+    const g = m.get(k) || { key: k, receita: 0, n: 0 };
+    g.receita += d.preco_usd; g.n += 1;
+    m.set(k, g);
+  });
+  return [...m.values()].map(g => ({ ...g, ticket: g.receita / g.n }));
+}
+
+/* ---------- Tooltip ---------- */
+const tip = document.getElementById("tip");
+function showTip(e, html) {
+  tip.innerHTML = html; tip.style.opacity = 1;
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX + pad, y = e.clientY + pad;
+  if (x + w > innerWidth - 8) x = e.clientX - w - pad;
+  if (y + h > innerHeight - 8) y = e.clientY - h - pad;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+const hideTip = () => (tip.style.opacity = 0);
+
+/* ---------- Lista de barras ---------- */
+function barList(el, items, { filterKey, metric, valueHtml, tipHtml }) {
+  el.innerHTML = "";
+  if (!items.length) { el.innerHTML = `<div class="empty">Nenhuma venda nesse recorte.</div>`; return; }
+  const max = Math.max(...items.map(i => i[metric])) || 1;
+  el.classList.toggle("has-sel", !!state[filterKey]);
+  items.forEach(it => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "row";
+    const clickable = it.key !== "__outros";
+    b.setAttribute("aria-pressed", state[filterKey] === it.key ? "true" : "false");
+    b.setAttribute("aria-label", `${it.label}: ${valueHtml(it).replace(/<[^>]+>/g, "")}`);
+    b.innerHTML = `<span class="lab">${it.label}</span><span class="trk"><span class="fill" style="width:${(it[metric] / max) * 100}%"></span></span><span class="val num">${valueHtml(it)}</span>`;
+    if (clickable) b.addEventListener("click", () => setFilter(filterKey, it.key, false));
+    else b.style.cursor = "default";
+    b.addEventListener("mousemove", e => showTip(e, tipHtml(it)));
+    b.addEventListener("mouseleave", hideTip);
+    el.appendChild(b);
+  });
+}
+
+/* ---------- Render ---------- */
+function render() {
+  const rows = DATA.filter(d => matches(d));
+  const total = rows.reduce((s, d) => s + d.preco_usd, 0);
+  const allTotal = DATA.reduce((s, d) => s + d.preco_usd, 0);
+  const active = FILTERS.filter(f => state[f.key]);
+
+  renderSelects();
+  clearBtn.disabled = active.length === 0;
+  document.getElementById("showing").innerHTML = active.length
+    ? `Mostrando <b>${rows.length}</b> de ${DATA.length} vendas · ` + active.map(f => `${f.label}: <b>${state[f.key]}</b>`).join(" · ")
+    : `Mostrando todas as <b>${DATA.length}</b> vendas`;
+
+  /* KPIs */
+  document.getElementById("kVendas").textContent = nf0.format(rows.length);
+  document.getElementById("kVendasS").textContent = active.length ? pct(rows.length, DATA.length) + " do total" : "base completa";
+  document.getElementById("kReceita").textContent = usd(total);
+  document.getElementById("kReceitaS").textContent = active.length ? pct(total, allTotal) + " da receita total" : usdFull(total);
+  const ticket = rows.length ? total / rows.length : 0;
+  const allTicket = allTotal / DATA.length;
+  document.getElementById("kTicket").textContent = rows.length ? usd(ticket) : "–";
+  document.getElementById("kTicketS").textContent = !rows.length ? "" :
+    active.length ? (ticket >= allTicket ? "+" : "−") + pct(Math.abs(ticket - allTicket), allTicket) + " vs. média geral" : "mediana " + usd(median(rows.map(d => d.preco_usd)));
+
+  const st = { "Entregue": 0, "Em andamento": 0, "Cancelada": 0 };
+  const stN = { "Entregue": 0, "Em andamento": 0, "Cancelada": 0 };
+  rows.forEach(d => { st[d.status_grupo] += d.preco_usd; stN[d.status_grupo]++; });
+  document.getElementById("kEntregue").textContent = rows.length ? pct(st["Entregue"], total) : "–";
+  const colors = { "Entregue": "var(--good)", "Em andamento": "var(--warn)", "Cancelada": "var(--crit)" };
+  const sb = document.getElementById("statusBar");
+  sb.innerHTML = Object.keys(st).filter(k => st[k] > 0).map(k => `<span style="width:${(st[k] / (total || 1)) * 100}%;background:${colors[k]}" title="${k}: ${usd(st[k])}"></span>`).join("");
+  sb.setAttribute("aria-label", Object.keys(st).map(k => `${k} ${pct(st[k], total)}`).join(", "));
+  document.getElementById("statusLegend").innerHTML = Object.keys(st).map(k =>
+    `<span><i style="background:${colors[k]}"></i>${k} <span class="num">${stN[k]}</span></span>`).join("");
+
+  /* Q1 — família */
+  const fam = groupBy(rows, "familia").sort((a, b) => b.receita - a.receita).map(g => ({ ...g, label: g.key }));
+  barList(document.getElementById("q1Bars"), fam, {
+    filterKey: "familia", metric: "receita",
+    valueHtml: g => `<b>${usd(g.receita)}</b> · ${g.n} vendas · ${usd(g.ticket)}`,
+    tipHtml: g => `<div class="t">${g.key}</div>Receita <b>${usdFull(g.receita)}</b> (${pct(g.receita, total)})<br>${g.n} vendas · ticket médio <b>${usd(g.ticket)}</b>`,
+  });
+  const q1 = document.getElementById("q1Insight");
+  if (fam.length > 1) {
+    const top = fam[0];
+    const byVol = [...fam].sort((a, b) => b.n - a.n)[0];
+    const byTicket = [...fam].sort((a, b) => b.ticket - a.ticket)[0];
+    let why;
+    if (byVol.key === top.key && byTicket.key === top.key) why = "lidera em volume <i>e</i> em ticket";
+    else if (byTicket.key === top.key) why = `ganha pelo ticket (${usd(top.ticket)}), não só pelo volume`;
+    else if (byVol.key === top.key) why = `ganha pelo volume (${top.n} vendas), não pelo ticket`;
+    else why = "combina volume e ticket acima da média";
+    q1.innerHTML = `<b>${top.key}</b> responde por <b>${pct(top.receita, total)}</b> da receita e ${why}.` +
+      (byTicket.key !== top.key ? ` Maior ticket: <b>${byTicket.key}</b> (${usd(byTicket.ticket)}).` : "") +
+      (() => { const low = [...fam].sort((a, b) => a.ticket - b.ticket)[0]; return low.key !== top.key ? ` ${low.key} tem o menor ticket (${usd(low.ticket)}).` : ""; })();
+  } else q1.innerHTML = fam.length ? `Recorte com uma família só: <b>${fam[0].key}</b>, ${fam[0].n} vendas.` : "";
+
+  /* Q2 — estado */
+  let est = groupBy(rows, "estado").sort((a, b) => b.receita - a.receita || b.n - a.n);
+  const TOP = 8;
+  let estItems = est.slice(0, TOP).map(g => ({ ...g, label: g.key }));
+  const restEl = document.getElementById("q2Rest");
+  let restShare = 0;
+  if (est.length > TOP) {
+    const rest = est.slice(TOP);
+    const r = rest.reduce((s, g) => s + g.receita, 0), n = rest.reduce((s, g) => s + g.n, 0);
+    restShare = r / total;
+    restEl.innerHTML = `<b>+ ${rest.length} estados</b> com ${n} vendas e ${usd(r)} (${pct(r, total)} da receita), nenhum acima de ${usd(rest[0].receita)}: <span title="${rest.map(g => g.key + ' ' + usd(g.receita)).join(' · ')}">${rest.map(g => g.key).join(", ")}</span>`;
+  } else restEl.innerHTML = "";
+  barList(document.getElementById("q2Bars"), estItems, {
+    filterKey: "estado", metric: "receita",
+    valueHtml: g => `<b>${usd(g.receita)}</b> · ${g.n} vendas`,
+    tipHtml: g => g.key === "__outros"
+      ? ""
+      : `<div class="t">${g.key}</div>Receita <b>${usdFull(g.receita)}</b> (${pct(g.receita, total)})<br>${g.n} vendas · ticket médio <b>${usd(g.ticket)}</b><br>Cidades: ${[...new Set(rows.filter(d => d.estado === g.key).map(d => d.cidade))].join(", ")}`,
+  });
+  const q2 = document.getElementById("q2Insight");
+  if (est.length > 1) {
+    const two = est.slice(0, 2);
+    const s2 = two[0].receita + two[1].receita;
+    q2.innerHTML = `<b>${two[0].key}</b> e <b>${two[1].key}</b> somam <b>${pct(s2, total)}</b> da receita. ` +
+      (restShare > 0.3 ? `O resto é pulverizado: <b>${pct(restShare * total, total)}</b> da receita vem de estados fora do top 8. ` : "") +
+      `São <b>${est.length}</b> estados e ${new Set(rows.map(d => d.cidade)).size} cidades no recorte.`;
+  } else q2.innerHTML = est.length ? `Recorte em <b>${est[0].key}</b>: ${new Set(rows.map(d => d.cidade)).size} cidade(s), ${est[0].n} vendas.` : "";
+
+  /* Q3 — pagamento */
+  const pay = groupBy(rows, "pagamento").sort((a, b) => b.n - a.n || b.receita - a.receita).map(g => ({ ...g, label: g.key }));
+  const payTip = g => `<div class="t">${g.key}</div>${g.n} vendas (${pct(g.n, rows.length)})<br>Ticket médio <b>${usd(g.ticket)}</b><br>Receita ${usd(g.receita)}`;
+  barList(document.getElementById("q3Count"), pay, {
+    filterKey: "pagamento", metric: "n",
+    valueHtml: g => `<b>${g.n}</b> · ${pct(g.n, rows.length)}`, tipHtml: payTip,
+  });
+  barList(document.getElementById("q3Ticket"), pay, {
+    filterKey: "pagamento", metric: "ticket",
+    valueHtml: g => `<b>${usd(g.ticket)}</b>`, tipHtml: payTip,
+  });
+  const q3 = document.getElementById("q3Insight");
+  if (pay.length > 1) {
+    const top = pay[0];
+    const hi = [...pay].sort((a, b) => b.ticket - a.ticket)[0];
+    const lo = [...pay].sort((a, b) => a.ticket - b.ticket)[0];
+    const credit = pay.filter(g => ["Financiamento", "Leasing"].includes(g.key)).reduce((s, g) => s + g.n, 0);
+    q3.innerHTML = `<b>${top.key}</b> é o método mais usado (${pct(top.n, rows.length)} das vendas). ` +
+      `O ticket muda bastante: <b>${hi.key}</b> tem média de <b>${usd(hi.ticket)}</b>, contra ${usd(lo.ticket)} em ${lo.key}. ` +
+      `Financiamento + leasing somam ${pct(credit, rows.length)} das vendas.`;
+  } else q3.innerHTML = pay.length ? `Recorte com um método só: <b>${pay[0].key}</b>.` : "";
+
+  renderTable(rows);
+}
+
+function median(a) {
+  if (!a.length) return 0;
+  const s = [...a].sort((x, y) => x - y), m = s.length >> 1;
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+}
+
+/* ---------- Tabela ---------- */
+let sortKey = "ordem_data", sortDir = 1;
+document.querySelectorAll("th[data-sort]").forEach(th => th.addEventListener("click", () => {
+  const k = th.dataset.sort;
+  sortDir = sortKey === k ? -sortDir : 1; sortKey = k;
+  render();
+}));
+function fmtData(d) {
+  if (d.data_venda) {
+    const [y, m, dd] = d.data_venda.split("-");
+    return `${dd}/${m}/${y}` + (d.qualidade_data === "recuperada" ? ` <span class="tag" title="Dia e mês estavam trocados na base crua">recuperada</span>` : "");
+  }
+  return `${MESES[d.mes_venda - 1]}/${d.ano_venda} <span class="tag" title="Dia inválido na base crua; mantidos só mês e ano">só mês</span>`;
+}
+function renderTable(rows) {
+  document.querySelectorAll("th[data-sort]").forEach(th => th.classList.remove("asc", "desc"));
+  const th = document.querySelector(`th[data-sort="${sortKey}"]`);
+  if (th) th.classList.add(sortDir > 0 ? "asc" : "desc");
+  const sorted = [...rows].sort((a, b) => {
+    const x = a[sortKey], y = b[sortKey];
+    return (typeof x === "number" ? x - y : String(x).localeCompare(String(y), "pt-BR")) * sortDir;
+  });
+  document.getElementById("tblCount").textContent = `(${rows.length})`;
+  document.getElementById("tbody").innerHTML = sorted.length ? sorted.map(d => `<tr>
+    <td class="num">${d.id}</td><td>${fmtData(d)}</td><td>${d.modelo}</td><td class="r num">${d.ano_modelo}</td>
+    <td class="r num">${usdFull(d.preco_usd)}</td><td class="r num">${nf0.format(d.milhas)}</td>
+    <td>${d.pagamento}</td><td>${d.cidade}, ${d.estado}</td><td>${d.status}</td></tr>`).join("")
+    : `<tr><td colspan="9" class="empty">Nenhuma venda nesse recorte.</td></tr>`;
+}
+
+/* ---------- Tema ---------- */
+const root = document.documentElement;
+try { const t = localStorage.getItem("porsche-theme"); if (t) root.dataset.theme = t; } catch (e) {}
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+  try { localStorage.setItem("porsche-theme", root.dataset.theme); } catch (e) {}
+  syncThemeBtn();
+});
+function syncThemeBtn() {
+  const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.getElementById("themeBtn").textContent = dark ? "Tema claro" : "Tema escuro";
+}
+syncThemeBtn();
+
+/* ---------- Nota de qualidade ---------- */
+const q = { original: 0, recuperada: 0, parcial: 0 };
+DATA.forEach(d => q[d.qualidade_data] = (q[d.qualidade_data] || 0) + 1);
+document.getElementById("qualidade").innerHTML =
+  `<b>Datas:</b> ${q.original} vendas com data válida, ${q.recuperada} recuperadas (dia e mês trocados na base crua) e ${q.parcial} com dia impossível (ex.: 30/02), mantidas só com mês e ano — por isso todas entram no filtro de ano.`;
+
+render();
+</script>
+</body>
+</html>
